@@ -5,3 +5,6 @@
         🗃 {{ box.number | ordinal }} Box <mark>{{ box.card_count }}</mark>
     </a>
 {% endfor %}
+<a href="{% url 'archived-cards' %}">
+    📦 Archive <mark>{{ archive_count }}</mark>
+</a>

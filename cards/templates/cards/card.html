@@ -3,9 +3,15 @@
     {% if not check_card %}
     <p>{{ card.answer }}</p>
     <hr>
-    <a href="{% url 'card-update' card.id %}" role="button">
-        ✏️ Edit Card
-    </a>
+    <div class="button-container">
+        <a href="{% url 'card-update' card.id %}" role="button">
+            ✏️ Edit Card
+        </a>
+        <form method="post" action="{% url 'card-archive' card.id %}">
+            {% csrf_token %}
+            <button type="submit" role="button">🗃️ Archive Card</button>
+        </form>
+    </div>
     {% else %}
         <details>
             <summary>Reveal Answer</summary>

@@ -8,7 +8,9 @@ class Card(models.Model):
     question = models.CharField(max_length=100)
     answer = models.CharField(max_length=100)
     box = models.IntegerField(choices=zip(BOXES, BOXES), default=BOXES[0])
+    original_box = models.IntegerField(choices=zip(BOXES, BOXES), null=True, blank=True)  # New field for the original box
     date_created = models.DateTimeField(auto_now_add=True)
+    archived = models.BooleanField(default=False) # New field for archiving
 
     def __str__(self):
         return self.question
@@ -21,3 +23,15 @@ class Card(models.Model):
             self.save()
 
         return self
+    
+    def archive(self):
+        self.original_box = self.box
+        self.archived = True
+        self.save()
+
+    def unarchive(self):
+        if self.original_box is not None:
+            self.box = self.original_box
+        self.archived = False
+        self.original_box = None
+        self.save()

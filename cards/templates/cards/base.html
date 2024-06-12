@@ -41,19 +41,42 @@
         border-color: var(--accent);
     }
 
-    button,
-    a[role="button"] {
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .button-container a,
+    .button-container button {
         color: white;
         background-color: var(--accent);
         padding: 0.5em 1em;
         border-radius: 5px;
         text-decoration: none;
+        border: none;
+        display: flex; /* Changed from inline-flex to flex */
+        align-items: center;
+        justify-content: center;
+        height: 40px; /* Set a fixed height */
     }
 
-    input, select, textarea {
-        width: 100%;
+    .button-container a {
+        display: flex; /* Changed from inline-block to flex */
+    }
+
+    .button-container form {
+        display: flex; /* Changed from inline-block to flex */
+        margin: 0;
+    }
+
+    .button-container button {
+        cursor: pointer;
     }
 </style>
+
+
+
 
 <body>
     <header>

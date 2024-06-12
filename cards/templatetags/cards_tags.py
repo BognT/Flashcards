@@ -9,9 +9,10 @@ register = template.Library()
 def boxes_as_links():
     boxes = []
     for box_num in BOXES:
-        card_count = Card.objects.filter(box=box_num).count()
+        card_count = Card.objects.filter(box=box_num, archived=False).count()
         boxes.append({
             "number": box_num, 
             "card_count": card_count,
         })
-    return {"boxes": boxes}
+    archive_count = Card.objects.filter(archived=True).count()
+    return {"boxes": boxes, "archive_count": archive_count}

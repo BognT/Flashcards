@@ -4,9 +4,9 @@
     <p>{{ card.answer }}</p>
     <hr>
     <div class="button-container">
-        <a href="{% url 'card-update' card.id %}" role="button">
-            ✏️ Edit Card
-        </a>
+        <form method="get" action="{% url 'card-update' card.id %}">
+            <button type="submit" role="button">✏️ Edit Card</button>
+        </form>
         <form method="post" action="{% url 'card-archive' card.id %}">
             {% csrf_token %}
             <button type="submit" role="button">🗃️ Archive Card</button>

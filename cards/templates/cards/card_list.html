@@ -5,7 +5,11 @@
     <h2>
         All cards
     </h2>
-    <a href="{% url 'card-create' %}" role="button">✨ Create New Card</a>
+    <div class="button-container">
+        <form action="{% url 'card-create' %}" method="get">
+            <button type="submit" role="button">✨ Create New Card</button>
+        </form>
+    </div>    
     {% for card in card_list %}
         {% ifchanged %}
             <h3> 🗃 {{ card.box | ordinal }} Box </h3>

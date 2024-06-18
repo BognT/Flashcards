@@ -1,0 +1,87 @@
+:root {
+    --accent: #006400; /* Dark green */
+    --accent-bg: #e0f2e9; /* Light green background for accents */
+    --bg: #fff;
+    --text: #212121;
+    --text-light: #585858;
+    --border: #d8dae1;
+    --code: #d81b60;
+    --preformatted: #444;
+    --marked: #f0fff0; /* Light green for card boxes */
+}
+
+/* Custom styles for the article (card boxes) */
+article {
+    background-color: var(--marked);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1em;
+    margin: 1em 0;
+}
+
+/* Centering headings */
+h2 {
+    text-align: center;
+}
+
+h2, h4 {
+    margin-top: 0;
+}
+
+/* Styling for horizontal rules */
+hr {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+/* Button container styling */
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Button styling */
+.button-container a,
+.button-container button {
+    color: white;
+    background-color: var(--accent);
+    padding: 0.5em 1em;
+    border-radius: 5px;
+    text-decoration: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+}
+
+.button-container form {
+    margin: 0;
+}
+
+.button-container button {
+    cursor: pointer;
+}
+
+/* Specific styles for the card-edit and card-archive buttons */
+.button-container .card-edit,
+.button-container .card-archive {
+    background-color: var(--accent);
+    color: white;
+    padding: 0.5em 1em;
+    border-radius: 5px;
+    text-decoration: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    margin: 0 5px;
+}
+
+/* Ensure form and link buttons are displayed inline */
+.button-container form,
+.button-container a {
+    display: inline-block;
+}

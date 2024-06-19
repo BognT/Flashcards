@@ -1,0 +1,20 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>{{ card.question }}</h1>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" name="grade" value="show-answer">Show Answer</button>
+  </form>
+
+  {% if request.method == "POST" %}
+    <p>{{ card.answer }}</p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" name="grade" value="again">Again</button>
+      <button type="submit" name="grade" value="hard">Hard</button>
+      <button type="submit" name="grade" value="good">Good</button>
+      <button type="submit" name="grade" value="easy">Easy</button>
+    </form>
+  {% endif %}
+{% endblock %}

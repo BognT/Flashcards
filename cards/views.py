@@ -2,10 +2,10 @@ from django.views import View
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView
 from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
 import random
 
 from .forms import CardCheckForm
-
 from .models import Card
 
 
@@ -17,12 +17,21 @@ class CardListView(ListView):
 class CardCreateView(CreateView):
     model = Card
     fields = ["question", "answer", "box"]
-    succes_url = reverse_lazy("card-create")
+    success_url = reverse_lazy("card-create")
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, f'Card "{form.instance.question}" created successfully.')
+        return response
 
 
 class CardUpdateView(CardCreateView, UpdateView):
     success_url = reverse_lazy("card-list")
 
+    def form_valid(self, form):
+        response = super(CardCreateView, self).form_valid(form)
+        messages.success(self.request, f'Card "{form.instance.question}" updated successfully.')
+        return response
 
 class BoxView(CardListView):
     template_name = "cards/box.html"
@@ -42,8 +51,9 @@ class BoxView(CardListView):
         form = self.form_class(request.POST)
         if form.is_valid():
             card = get_object_or_404(Card, id=form.cleaned_data["card_id"])
+            old_box = card.box
             card.move(form.cleaned_data["solved"])
-
+            messages.success(request, f'Card "{card.question}" moved from Box {old_box} to Box {card.box}.')
         return redirect(request.META.get("HTTP_REFERER"))
     
 class ArchiveCardView(View):
@@ -52,6 +62,7 @@ class ArchiveCardView(View):
         card = get_object_or_404(Card, pk=pk)
         card.archived = True
         card.save()
+        messages.success(request, f'Card "{card.question}" archived.')
         return redirect('card-list')
     
 class ArchivedCardListView(ListView):
@@ -64,4 +75,5 @@ class UnarchiveCardView(View):
     def post(self, request, pk, *args, **kwargs):
         card = get_object_or_404(Card, pk=pk)
         card.unarchive()
+        messages.success(request, f'Card "{card.question}" unarchived.')
         return redirect('archived-cards')

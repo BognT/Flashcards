@@ -1,6 +1,8 @@
 {% load cards_tags %}
 
 <nav>
-    <a href="{% url 'card-list' %}">🗂 All Cards</a>
-    {% boxes_as_links %}
+    <a href="{% url 'deck-list' %}">🗂 All Decks</a>
+    {% if deck %}
+        {% boxes_as_links deck=deck %}
+    {% endif %}
 </nav>

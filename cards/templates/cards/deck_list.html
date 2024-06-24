@@ -1,0 +1,15 @@
+{% extends "cards/base.html" %}
+
+{% block content %}
+    <h2>Decks</h2>
+    <article>
+        {% for deck in deck_list %}
+            <ol><a href="{% url 'card-list' deck.id %}">{{ deck.name }}</a></ol>
+        {% endfor %}
+    </article>
+    <div class="button-container">
+        <form action="{% url 'deck-create' %}" method="get">
+            <button type="submit" role="button">➕ Create Deck</button> 
+        </form>
+    </div>    
+{% endblock content %}    

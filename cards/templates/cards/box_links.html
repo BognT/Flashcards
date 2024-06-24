@@ -1,10 +1,10 @@
 {% load humanize %}
 
 {% for box in boxes %}
-    <a href="{% url 'box' box_num=box.number %}">
+    <a href="{% url 'box' deck_id=deck_id box_num=box.number %}">
         🗃 {{ box.number | ordinal }} Box <mark>{{ box.card_count }}</mark>
     </a>
 {% endfor %}
-    <a href="{% url 'archived-cards' %}">
+    <a href="{% url 'archived-cards' deck_id=deck_id %}">
         📦 Archive <mark>{{ archive_count }}</mark>
     </a>

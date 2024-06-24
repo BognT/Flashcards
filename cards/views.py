@@ -1,32 +1,103 @@
 from django.views import View
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 import random
 
-from .forms import CardCheckForm
-from .models import Card
+from .forms import CardCheckForm, DeckForm
+from .models import Card, Deck
 
+class DeckListView(ListView):
+    model = Deck
+    template_name = "cards/deck_list.html"
+    context_object_name = "deck_list"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['deck'] = None
+        return context    
+
+class DeckCreateView(CreateView):
+    model = Deck
+    form_class = DeckForm
+    template_name = "cards/deck_form.html"
+    success_url = "/"
+
+    def get_success_url(self):
+        return reverse_lazy("deck-list")
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, f'Deck "{form.instance.name}" created successfully.')
+        return response
+    
+class DeckUpdateView(UpdateView):
+    model = Deck
+    form_class = DeckForm
+    template_name = "cards/deck_form.html"
+    success_url = reverse_lazy("deck-list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['deck'] = self.object
+        return context
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, f'Deck "{form.instance.name}" updated successfully.')
+        return response
+    
+class DeckDeleteView(DeleteView):
+    model = Deck
+    success_url = reverse_lazy("deck-list")
+
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
+        messages.success(self.request, "Deck deleted successfully.")
+        return response
 
 class CardListView(ListView):
     model = Card
-    queryset = Card.objects.filter(archived=False).order_by("box", "-date_created")
+    template_name = "cards/card_list.html"
+    context_object_name = "card_list"
 
+    def get_queryset(self):
+        self.deck = get_object_or_404(Deck, id=self.kwargs['deck_id'])
+        return Card.objects.filter(deck=self.deck, archived=False).order_by("box", "-date_created")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        deck = get_object_or_404(Deck, pk=self.kwargs['deck_id'])
+        context['deck'] = deck
+        context['card_list'] = Card.objects.filter(deck=deck)
+        return context
 
 class CardCreateView(CreateView):
     model = Card
     fields = ["question", "answer", "box"]
-    success_url = reverse_lazy("card-create")
+
+    def get_success_url(self):
+        return reverse_lazy("card-list", kwargs={'deck_id': self.kwargs['deck_id']})
 
     def form_valid(self, form):
+        form.instance.deck = get_object_or_404(Deck, id=self.kwargs['deck_id'])
         response = super().form_valid(form)
         messages.success(self.request, f'Card "{form.instance.question}" created successfully.')
         return response
 
+    def get_success_url(self):
+        return reverse_lazy('card-list', kwargs={'deck_id': self.kwargs['deck_id']})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['deck'] = get_object_or_404(Deck, id=self.kwargs['deck_id'])
+        return context
 
 class CardUpdateView(CardCreateView, UpdateView):
-    success_url = reverse_lazy("card-list")
+    
+    def get_success_url(self):
+        return reverse_lazy("card-list", kwargs={'deck_id': self.object.deck.id})
 
     def form_valid(self, form):
         response = super(CardCreateView, self).form_valid(form)
@@ -38,11 +109,14 @@ class BoxView(CardListView):
     form_class = CardCheckForm
 
     def get_queryset(self):
-        return Card.objects.filter(box=self.kwargs["box_num"])
+        self.deck = get_object_or_404(Deck, id=self.kwargs['deck_id'])
+        return Card.objects.filter(deck=self.deck, box=self.kwargs["box_num"])
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["box_number"] = self.kwargs["box_num"]
+        context['deck'] = self.deck
+        context['deck_id'] = self.deck.id
         if self.object_list:
             context["check_card"] = random.choice(self.object_list)
         return context
@@ -63,12 +137,21 @@ class ArchiveCardView(View):
         card.archived = True
         card.save()
         messages.success(request, f'Card "{card.question}" archived.')
-        return redirect('card-list')
+        return redirect('card-list', deck_id=card.deck.id)
     
 class ArchivedCardListView(ListView):
     model = Card
     template_name = "cards/archived_cards.html"
-    queryset = Card.objects.filter(archived=True).order_by("-date_created")
+
+    def get_queryset(self):
+        self.deck = get_object_or_404(Deck, id=self.kwargs['deck_id'])
+        return Card.objects.filter(deck=self.deck, archived=True).order_by("-date_created")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['deck'] = self.deck
+        context['deck_id'] = self.deck.id
+        return context
 
 class UnarchiveCardView(View):
 
@@ -76,4 +159,4 @@ class UnarchiveCardView(View):
         card = get_object_or_404(Card, pk=pk)
         card.unarchive()
         messages.success(request, f'Card "{card.question}" unarchived.')
-        return redirect('archived-cards')
+        return redirect('archived-cards', deck_id=card.deck.id)

@@ -1,6 +1,7 @@
 {% extends "cards/base.html" %}
 
 {% block content %}
+    <h2>Deck: {{ deck.name }}</h2>
     {% if card %}
         <h2>✏️ Edit Card</h2>
     {% else %}
@@ -11,7 +12,7 @@
         {{ form.as_p }}
         <input type="submit" value="Save Card">
     </form>
-    <a href="{% url 'card-list' %}">
+    <a href="{% url 'card-list' deck_id=deck.id %}">
         Cancel
     </a>
 {% endblock %}

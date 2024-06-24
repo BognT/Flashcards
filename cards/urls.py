@@ -1,12 +1,20 @@
 from django.urls import path
-from . import views
+from .views import (
+    DeckListView, DeckCreateView, DeckUpdateView, DeckDeleteView, CardListView, CardCreateView, CardUpdateView, BoxView,
+    ArchiveCardView, ArchivedCardListView, UnarchiveCardView
+)
 
 urlpatterns = [
-    path("", views.CardListView.as_view(), name="card-list"),
-    path("new", views.CardCreateView.as_view(), name="card-create"),
-    path("edit/<int:pk>", views.CardUpdateView.as_view(), name="card-update"),
-    path("box/<int:box_num>", views.BoxView.as_view(), name="box"),
-    path("archive/<int:pk>", views.ArchiveCardView.as_view(), name="card-archive"),
-    path("archived", views.ArchivedCardListView.as_view(), name="archived-cards"),
-    path("unarchive/<int:pk>", views.UnarchiveCardView.as_view(), name="card-unarchive"),
+    path("", DeckListView.as_view(), name="deck-list"),
+    path("deck/<int:deck_id>/", CardListView.as_view(), name="card-list"),
+    path("deck/<int:deck_id>/create/", CardCreateView.as_view(), name="card-create"),
+    path("deck/<int:deck_id>/update/<int:pk>/", CardUpdateView.as_view(), name="card-update"),
+    path("deck/<int:deck_id>/box/<int:box_num>/", BoxView.as_view(), name="box"),
+    path("deck/<int:deck_id>/archive/<int:pk>/", ArchiveCardView.as_view(), name="card-archive"),
+    path("deck/<int:deck_id>/archived/", ArchivedCardListView.as_view(), name="archived-cards"),
+    path("deck/<int:deck_id>/unarchive/<int:pk>/", UnarchiveCardView.as_view(), name="card-unarchive"),
+    path("deck/create/", DeckCreateView.as_view(), name="deck-create"),
+    path("deck/<int:pk>/edit/", DeckUpdateView.as_view(), name="deck-edit"),
+    path("deck/<int:pk>/delete/", DeckDeleteView.as_view(), name="deck-delete"),
+    #path("deck/<int:deck_id>/create-deck/", DeckCreateView.as_view(), name="deck-create"),  
 ]

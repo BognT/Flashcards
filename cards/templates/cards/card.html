@@ -4,10 +4,10 @@
     <p>{{ card.answer }}</p>
     <hr>
     <div class="button-container">
-        <form method="get" action="{% url 'card-update' card.id %}">
+        <form method="get" action="{% url 'card-update' deck_id=deck.id pk=card.id %}">
             <button type="submit" role="button">✏️ Edit Card</button>
         </form>
-        <form method="post" action="{% url 'card-archive' card.id %}">
+        <form method="post" action="{% url 'card-archive' deck_id=deck.id pk=card.id %}">
             {% csrf_token %}
             <button type="submit" role="button">🗃️ Archive Card</button>
         </form>

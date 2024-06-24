@@ -9,8 +9,9 @@
     --border: #d8dae1;
     --code: #d81b60;
     --preformatted: #444;
-    --marked: #f0fff0; /* Light green for card boxes */
-}
+    --marked: #c8e6c9; /* Softer green for card boxes */
+    --marked-text: #006400; /* Dark green text for card boxes */
+    --highlight: #3e793e; /* Light green for highlights */}
 
 
 article {

@@ -1,19 +1,25 @@
 {% extends "cards/base.html" %}
-{% load humanize %}
+{% load humanize cards_tags %}
 
 {% block content %}
-    <h2>
-        All cards
-    </h2>
+    <h2>Deck: {{ deck.name }}</h2>
     <div class="button-container">
-        <form action="{% url 'card-create' %}" method="get">
-            <button type="submit" role="button">✨ Create New Card</button>
+        <form action="{% url 'card-create' deck_id=deck.id %}" method="get">
+            <button type="submit" role="button">✨ Create New Card</button> 
         </form>
-    </div>    
+        <form action="{% url 'deck-edit' deck.id %}" method="get">
+            <button type="submit" role="button">✏️ Edit Deck</button>
+        </form>
+        <form action="{% url 'deck-delete' deck.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" role="button">🗑️ Delete Deck</button>
+        </form>
+    </div>
+    
     {% for card in card_list %}
         {% ifchanged %}
-            <h3> 🗃 {{ card.box | ordinal }} Box </h3>
+            <h3>🗃 {{ card.box | ordinal }} Box</h3>
         {% endifchanged %}
-        {% include "cards/card.html" %}
+        {% include "cards/card.html" with card=card %}
     {% endfor %}
-{% endblock content %}
+{% endblock %}

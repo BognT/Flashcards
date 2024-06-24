@@ -1,0 +1,14 @@
+{% extends "cards/base.html" %}
+
+{% block content %}
+    {% if deck %}
+        <h2>Edit Deck</h2>
+    {% else %}
+        <h2>Create New Deck</h2>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">{{ form.instance.pk|yesno:"Update Deck,Create Deck" }}</button>
+    </form>
+{% endblock %}

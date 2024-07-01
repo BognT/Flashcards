@@ -3,6 +3,15 @@
 
 {% block content %}
     <h2>Deck: {{ deck.name }}</h2>
+    <ul>
+        <li>New: {{ deck.new_count }}</li>
+        <li>Learning: {{ deck.learning_count }}</li>
+        <li>To Review: {{ deck.review_count }}</li>
+    </ul>
+    <div class="button-container">
+        <a href="{% url 'study-now' deck.id %}">Study Now</a>
+    </div>
+    <hr>
     <div class="button-container">
         <form action="{% url 'card-create' deck_id=deck.id %}" method="get">
             <button type="submit" role="button">✨ Create New Card</button> 

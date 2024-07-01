@@ -1,9 +1,15 @@
 from django.views import View
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
+from django.utils import timezone
+from datetime import datetime
+from .models import Card, Deck
+from fsrs import FSRS, Card as FSRSCard, Rating
 import random
+import logging
+
 
 from .forms import CardCheckForm, DeckForm
 from .models import Card, Deck
@@ -160,3 +166,47 @@ class UnarchiveCardView(View):
         card.unarchive()
         messages.success(request, f'Card "{card.question}" unarchived.')
         return redirect('archived-cards', deck_id=card.deck.id)
+
+fsrs = FSRS()
+
+def study_now(request, deck_id):
+    deck = get_object_or_404(Deck, pk=deck_id)
+    now = timezone.now()
+    cards = deck.cards.filter(archived=False, due_date__lte=now).order_by('due_date')
+    if not cards:
+        return render(request, 'cards/no_cards_to_study.html')
+    
+    card = cards.first()
+    return render(request, 'cards/study_now.html', {'card': card, 'deck': deck})
+
+logger = logging.getLogger(__name__)
+
+def record_answer(request, deck_id, card_id, rating):
+    card = get_object_or_404(Card, pk=card_id)
+    deck = card.deck
+    now = timezone.now()
+
+    if not card.last_review:
+        card.last_review = card.date_created
+    
+    fsrs_card = FSRSCard(state=card.state, due=card.due_date, last_review=card.last_review)
+    rating_mapping = {
+        'again': Rating.Again,
+        'hard': Rating.Hard,
+        'good': Rating.Good,
+        'easy': Rating.Easy,
+    }
+    if rating not in rating_mapping:
+        return redirect('study-now', deck_id=deck_id)
+
+    scheduling_cards = fsrs.repeat(fsrs_card, now)
+    selected_card = scheduling_cards[rating_mapping[rating]].card
+    
+    logger.debug(f'Updated card {card_id}: state={selected_card.state}, due_date={selected_card.due}')
+
+    card.state = selected_card.state
+    card.due_date = selected_card.due
+    card.last_review = now
+    card.save()
+
+    return redirect('study-now', deck_id=deck_id)

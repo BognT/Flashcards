@@ -1,0 +1,30 @@
+{% extends "cards/base.html" %}
+
+{% block content %}
+<article>
+    <h4>{{ card.question }}</h4>
+    <details>
+        <summary>Reveal Answer</summary>
+        <p>{{ card.answer }}</p>
+    </details>
+    <hr>
+    <div class="button-container">
+        <form method="post" action="{% url 'record-answer' deck_id=deck.id card_id=card.id rating='again' %}">
+            {% csrf_token %}
+            <button type="submit" role="button">Again</button>
+        </form>
+        <form method="post" action="{% url 'record-answer' deck_id=deck.id card_id=card.id rating='hard' %}">
+            {% csrf_token %}
+            <button type="submit" role="button">Hard</button>
+        </form>
+        <form method="post" action="{% url 'record-answer' deck_id=deck.id card_id=card.id rating='good' %}">
+            {% csrf_token %}
+            <button type="submit" role="button">Good</button>
+        </form>
+        <form method="post" action="{% url 'record-answer' deck_id=deck.id card_id=card.id rating='easy' %}">
+            {% csrf_token %}
+            <button type="submit" role="button">Easy</button>
+        </form>
+    </div>
+</article>
+{% endblock %}
